@@ -1,7 +1,7 @@
 import Head from "next/head";
 import * as React from "react";
 import solveCommand from "../api/solveCommand";
-import { parse, SyntaxError as GrammarError } from "../grammar/grammar";
+import { parse } from "../grammar/grammar";
 
 export default function Home() {
   const [command, setCommand] = React.useState("1d20+5 > 17 ? 2d8+3");
@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>D&D Roll</title>
+        <title>D&amp;D Roll</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
