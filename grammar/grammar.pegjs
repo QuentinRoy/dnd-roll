@@ -2,7 +2,7 @@ Start
   = _ res:LabeledOperation _ { return res; }
 
 LabeledOperation
-  = Operation
+  = op:Operation { return { label: null, ...op }; }
   / label:Label _ ":" _ op:Operation { return { label, ...op }; }
 
 Operation
@@ -16,6 +16,7 @@ Instruction
 
 Expression
   = cond:ConditionalThrows { return { type: "CONDITIONAL", ...cond }; }
+  / test:Test { return { type: "TEST", ...test } }
   / ThrowOperation
    
 ConditionalThrows
@@ -27,10 +28,7 @@ Test
   }
 
 ThrowOperation
-  = throws:Throws _ modifier:Modifier {
-    return { type: "THROWS", throws, modifier }
-  } 
-  / throws:Throws {
+  = throws:Throws {
     return { type: "THROWS", throws };
   }
 
@@ -39,11 +37,11 @@ Throws
   / t:Throw { return [t]; }
 
 Throw
-  = sign:Sign _ count:Integer faces:Dice {
-    return { type: "DICE", faces, count: sign * count  };
+  = sign:Sign _ count:Integer faces:Dice modifier:Modifier? {
+    return { type: "DICE", faces, count: sign * count, modifier };
   }
-  / count:Integer faces:Dice {
-    return { type: "DICE", faces, count };
+  / count:Integer faces:Dice modifier:Modifier? {
+    return { type: "DICE", faces, count, modifier };
   }
   / sign:Sign _ number:Integer {
     return { type: "NUMBER", value: sign * number};

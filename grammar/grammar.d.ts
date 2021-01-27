@@ -15,7 +15,6 @@ type RunCommand = {
   type: "RUN";
   operation: Operation;
 };
-
 type SumCommand = {
   label?: string;
   type: "SUM";
@@ -23,46 +22,39 @@ type SumCommand = {
   operation: Operation;
 };
 
-type Operation = ThrowOperation | ConditionalOperation;
+type Operation = ThrowsOperation | ConditionalOperation | TestOperation;
 
-type ThrowOperation = {
+type ThrowsOperation = {
   type: "THROWS";
   throws: Throw[];
-  modifier?: Modifier;
 };
 
 type Throw = DiceThrow | NumberThrow;
-
-type Modifier = "ADVANTAGE" | "DISADVANTAGE";
-
 type DiceThrow = {
   type: "DICE";
   faces: number;
-  counter: number;
+  count: number;
+  modifier: Modifier | null;
 };
-
-type NumberThrow = {
-  type: "NUMBER";
-  value: number;
-};
+type NumberThrow = { type: "NUMBER"; value: number };
+type Modifier = "ADVANTAGE" | "DISADVANTAGE";
 
 type ConditionalOperation = {
   type: "CONDITIONAL";
-  test: ThrowOperation;
+  test: ThrowsOperation;
   comparator: Comparator;
-  target: ThrowOperation;
-  success: ThrowOperation;
+  target: ThrowsOperation;
+  success: ThrowsOperation;
+};
+
+type TestOperation = {
+  type: "TEST";
+  test: ThrowsOperation;
+  comparator: Comparator;
+  target: ThrowsOperation;
 };
 
 type Comparator = ">=" | "<=" | ">" | "<" | "=";
 
-type Location = {
-  start: TextRange;
-  end: TextRange;
-};
-
-type TextRange = {
-  offset: number;
-  line: number;
-  column: number;
-};
+type Location = { start: TextRange; end: TextRange };
+type TextRange = { offset: number; line: number; column: number };

@@ -1,5 +1,6 @@
 import Head from "next/head";
 import * as React from "react";
+import solveCommand from "../api/solveCommand";
 import { parse, SyntaxError as GrammarError } from "../grammar/grammar";
 
 export default function Home() {
@@ -18,8 +19,8 @@ export default function Home() {
             evt.preventDefault();
             try {
               let c = parse(command);
-              console.log(c.operation.type);
-              setCommand("");
+              let solvedC = solveCommand(c);
+              console.log(solvedC);
             } catch (e) {
               if (e instanceof GrammarError) {
                 console.error(e.message);
