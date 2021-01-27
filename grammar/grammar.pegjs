@@ -38,7 +38,7 @@ Throws
 
 Throw
   = sign:Sign _ count:Integer faces:Dice modifier:Modifier? {
-    return { type: "DICE", faces, count: sign * count, modifier };
+    return { type: "DICE", sign * faces, count:  count, modifier };
   }
   / count:Integer faces:Dice modifier:Modifier? {
     return { type: "DICE", faces, count, modifier };

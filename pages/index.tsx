@@ -22,9 +22,7 @@ export default function Home() {
               let solvedC = solveCommand(c);
               console.log(solvedC);
             } catch (e) {
-              if (e instanceof GrammarError) {
-                console.error(e.message);
-              }
+              console.error(e.message);
             }
           }}
         >
