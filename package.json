@@ -18,6 +18,7 @@
     "pegjs": "^0.10.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "sass": "^1.32.5",
     "type-fest": "^0.7.1"
   },
   "devDependencies": {

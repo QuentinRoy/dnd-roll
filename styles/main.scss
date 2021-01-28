@@ -1,0 +1,8 @@
+@import "./colors.scss";
+
+body {
+  background: $startColor;
+  background: linear-gradient(180deg, $startColor 0%, $bottomColor 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

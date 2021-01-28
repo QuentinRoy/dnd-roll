@@ -1,6 +1,9 @@
-import Head from "next/head";
 import * as React from "react";
 import solveCommand, { SolvedCommand } from "../api/solveCommand";
+import CommandHistory from "../components/CommandHistory";
+import ErrorMessage from "../components/ErrorMessage";
+import Input from "../components/Input";
+import Layout from "../components/Layout";
 import { parse } from "../grammar/grammar";
 
 function reducer(state: State, action: Action) {
@@ -44,39 +47,22 @@ export default function Home() {
   }, [error]);
 
   return (
-    <div>
-      <Head>
-        <title>D&amp;D Roll</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
+    <Layout title="D&amp;D Roll">
       <main>
-        <form
-          onSubmit={(evt) => {
-            evt.preventDefault();
+        <Input
+          submitLabel="Roll"
+          onChange={(value) => {
+            dispatch({ type: "INPUT", input: value });
+          }}
+          onSubmit={() => {
             dispatch({ type: "SUBMIT" });
           }}
-        >
-          <input
-            type="text"
-            placeholder="1d20 + 1 > 12 ? 2d6 + 1"
-            value={input}
-            onChange={(evt) => {
-              dispatch({ type: "INPUT", input: evt.target.value });
-            }}
-          />
-        </form>
-        <div>{error == null ? null : error.message}</div>
-        <ul>
-          {history.map((c) => (
-            <li key={c.id}>
-              {c.operations[0].result == null
-                ? "failed"
-                : c.operations[0].result}
-            </li>
-          ))}
-        </ul>
+          value={input}
+          placeholder="1d20 + 1 > 12 ? 2d6 + 1"
+        />
+        <ErrorMessage error={error} />
+        <CommandHistory commands={history} />
       </main>
-    </div>
+    </Layout>
   );
 }
