@@ -1,5 +1,5 @@
 import { ReadonlyDeep } from "type-fest";
-import { cloneDeep, uniqueId } from "lodash";
+import { uniqueId } from "lodash";
 import { Command } from "../grammar/grammar";
 import solveOperation, { SolvedOperation } from "./solveOperation";
 import { OptionRecord, validateOptions } from "./options";
@@ -14,12 +14,15 @@ export default function solveCommand(
   } else {
     options = new OptionRecord([]);
   }
-  if (options.repeat > 1) throw new Error(`repeat not supported yet`);
   if (options.areCritsEnabled) throw new Error(`crits not supported yet`);
+  let operations = [];
+  for (let i = 0; i < options.repeat; i++) {
+    operations.push(solveOperation(command.operation));
+  }
   return {
     options,
     id: uniqueId(`solcmd`),
-    operations: [solveOperation(command.operation)],
+    operations,
   };
 }
 
