@@ -1,6 +1,10 @@
 import { Comparator } from "../grammar/grammar";
 
-export function compare(x: number, y: number, comparator: Comparator): boolean {
+export function compare(
+  x: number,
+  y: number,
+  comparator: ">=" | "<=" | ">" | "<" | "=",
+): boolean {
   switch (comparator) {
     case ">=":
       return x >= y;

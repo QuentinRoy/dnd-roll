@@ -1,5 +1,5 @@
 import { ReadonlyDeep } from "type-fest";
-import { sumBy } from "lodash";
+import { sumBy, cloneDeep } from "lodash";
 import { Throw, ThrowsOperation } from "../grammar/grammar";
 import solveNumberThrow, { SolvedNumberThrow } from "./solveNumberThrow";
 import solveDiceThrow, { SolvedDiceThrow } from "./solveDiceThrow";
@@ -9,7 +9,7 @@ export default function solveThrowsOperation(
 ): SolvedThrowsOperation {
   let solvedThrows = solveThrows(op.throws);
   return {
-    ...op,
+    ...cloneDeep(op),
     throws: solvedThrows,
     result: sumBy(solvedThrows, (t) => t.result),
   };

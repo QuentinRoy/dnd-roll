@@ -1,33 +1,30 @@
 export function parse(intput: string): Command;
 
-export class SyntaxError extends Error {
+export interface SyntaxError extends Error, TrackedFragment {
   name: "SyntaxError";
-  message: string;
   expected: object[];
   found: string | null;
-  location: Location;
 }
 
-type Command = RunCommand | SumCommand;
-
-type RunCommand = {
-  label?: string;
-  type: "RUN";
-  operation: Operation;
-};
-type SumCommand = {
-  label?: string;
-  type: "SUM";
-  value: number;
-  operation: Operation;
-};
+type Command = { optionSet?: OptionSet; label?: Label; operation: Operation };
 
 type Operation = ThrowsOperation | ConditionalOperation | TestOperation;
+type ThrowsOperation = { type: "THROWS"; throws: Throw[] } & TrackedFragment;
+type ConditionalOperation = {
+  type: "CONDITIONAL";
+  test: ThrowsOperation;
+  comparator: Comparator;
+  target: ThrowsOperation;
+  success: ThrowsOperation;
+} & TrackedFragment;
+type TestOperation = {
+  type: "TEST";
+  test: ThrowsOperation;
+  comparator: Comparator;
+  target: ThrowsOperation;
+} & TrackedFragment;
 
-type ThrowsOperation = {
-  type: "THROWS";
-  throws: Throw[];
-};
+type Label = { text: string } & TrackedFragment;
 
 type Throw = DiceThrow | NumberThrow;
 type DiceThrow = {
@@ -35,26 +32,17 @@ type DiceThrow = {
   faces: number;
   count: number;
   modifier: Modifier | null;
-};
-type NumberThrow = { type: "NUMBER"; value: number };
+} & TrackedFragment;
+type NumberThrow = { type: "NUMBER"; value: number } & TrackedFragment;
 type Modifier = "ADVANTAGE" | "DISADVANTAGE";
 
-type ConditionalOperation = {
-  type: "CONDITIONAL";
-  test: ThrowsOperation;
-  comparator: Comparator;
-  target: ThrowsOperation;
-  success: ThrowsOperation;
-};
+type Comparator = { type: ">=" | "<=" | ">" | "<" | "=" } & TrackedFragment;
 
-type TestOperation = {
-  type: "TEST";
-  test: ThrowsOperation;
-  comparator: Comparator;
-  target: ThrowsOperation;
-};
+type OptionSet = { values: Option[] } & TrackedFragment;
+type Option = RepeatOption | CritsOption;
+type RepeatOption = { type: "REPEAT"; value: number } & TrackedFragment;
+type CritsOption = { type: "CRITS"; enabled: boolean } & TrackedFragment;
 
-type Comparator = ">=" | "<=" | ">" | "<" | "=";
-
+type TrackedFragment = { location: Location; text: string };
 type Location = { start: TextRange; end: TextRange };
 type TextRange = { offset: number; line: number; column: number };

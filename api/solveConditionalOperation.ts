@@ -9,15 +9,16 @@ import { compare } from "./utils";
 export default function solveConditionalOperation(
   op: ReadonlyDeep<ConditionalOperation>,
 ): SolvedConditionalOperation {
+  let clonedOp = cloneDeep(op);
   let test = solveThrowsOperation(op.test);
   let target = solveThrowsOperation(op.target);
-  let isSuccessful = compare(test.result, target.result, op.comparator);
+  let isSuccessful = compare(test.result, target.result, op.comparator.type);
   let success = isSuccessful
     ? solveThrowsOperation(op.success)
-    : cloneDeep(op.success);
+    : clonedOp.success;
   let result = isSuccessful ? success.result : null;
   return {
-    ...op,
+    ...clonedOp,
     isSuccessful,
     result,
     test,
@@ -27,9 +28,9 @@ export default function solveConditionalOperation(
 }
 
 export type SolvedConditionalOperation = ConditionalOperation & {
+  isSuccessful: boolean;
   result: number | null;
   test: SolvedThrowsOperation;
   target: SolvedThrowsOperation;
-  isSuccessful: boolean;
   success: ThrowsOperation | SolvedThrowsOperation;
 };

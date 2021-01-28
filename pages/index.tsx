@@ -1,10 +1,47 @@
 import Head from "next/head";
 import * as React from "react";
-import solveCommand from "../api/solveCommand";
+import solveCommand, { SolvedCommand } from "../api/solveCommand";
 import { parse } from "../grammar/grammar";
 
+function reducer(state: State, action: Action) {
+  switch (action.type) {
+    case "SUBMIT":
+      try {
+        let command = parse(state.input);
+        let solvedCommand = solveCommand(command);
+        return {
+          ...state,
+          history: [solvedCommand, ...state.history],
+          error: null,
+        };
+      } catch (e) {
+        return { ...state, error: e };
+      }
+    case "INPUT":
+      return { ...state, input: action.input };
+  }
+}
+
+type State = {
+  input: string;
+  history: SolvedCommand[];
+  error: Error | null;
+};
+
+type Action = { type: "SUBMIT" } | { type: "INPUT"; input: string };
+
 export default function Home() {
-  const [command, setCommand] = React.useState("1d20+5 > 17 ? 2d8+3");
+  const [{ input, history, error }, dispatch] = React.useReducer(reducer, {
+    input: "",
+    history: [],
+    error: null,
+  });
+
+  React.useEffect(() => {
+    if (error != null) {
+      console.error(error.message);
+    }
+  }, [error]);
 
   return (
     <div>
@@ -17,23 +54,28 @@ export default function Home() {
         <form
           onSubmit={(evt) => {
             evt.preventDefault();
-            try {
-              let c = parse(command);
-              let solvedC = solveCommand(c);
-              console.log(solvedC);
-            } catch (e) {
-              console.error(e.message);
-            }
+            dispatch({ type: "SUBMIT" });
           }}
         >
           <input
             type="text"
-            value={command}
+            placeholder="1d20 + 1 > 12 ? 2d6 + 1"
+            value={input}
             onChange={(evt) => {
-              setCommand(evt.target.value);
+              dispatch({ type: "INPUT", input: evt.target.value });
             }}
           />
         </form>
+        <div>{error == null ? null : error.message}</div>
+        <ul>
+          {history.map((c) => (
+            <li key={c.id}>
+              {c.operations[0].result == null
+                ? "failed"
+                : c.operations[0].result}
+            </li>
+          ))}
+        </ul>
       </main>
     </div>
   );
