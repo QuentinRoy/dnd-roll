@@ -1,23 +1,36 @@
 import { ReadonlyDeep } from "type-fest";
-import { Option } from "../grammar/grammar";
+import { Operation, Option } from "../grammar/grammar";
 
-export class OptionRecord {
-  public areCritsEnabled: boolean = true;
-  public repeat: number = 1;
+export type OptionRecord = {
+  areCritsEnabled?: boolean;
+  repeat?: number;
+};
 
-  constructor(options: ReadonlyDeep<Option[]>) {
-    for (let i = 0; i < options.length; i++) {
-      let op = options[i];
-      switch (op.type) {
-        case "CRITS":
-          this.areCritsEnabled = op.enabled;
-          break;
-        case "REPEAT":
-          this.repeat = op.value;
-          break;
-      }
+export function createOptionRecord(
+  options: ReadonlyDeep<Option[]>,
+  operation: ReadonlyDeep<Operation>,
+) {
+  validateOptions(options);
+  let rec: OptionRecord = {};
+  for (let i = 0; i < options.length; i++) {
+    let opt = options[i];
+    switch (opt.type) {
+      case "CRITS":
+        rec.areCritsEnabled = opt.enabled;
+        break;
+      case "REPEAT":
+        rec.repeat = opt.value;
+        break;
     }
   }
+  if (rec.areCritsEnabled == null) {
+    if (operation.type === "CONDITIONAL") {
+      rec.areCritsEnabled = true;
+    } else if (operation.type === "TEST") {
+      rec.areCritsEnabled = false;
+    }
+  }
+  return rec;
 }
 
 export function validateOptions(options: ReadonlyDeep<Option[]>) {

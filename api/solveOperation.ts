@@ -1,5 +1,6 @@
 import { ReadonlyDeep } from "type-fest";
 import { Operation } from "../grammar/grammar";
+import { OptionRecord } from "./options";
 import solveConditionalOperation, {
   SolvedConditionalOperation,
 } from "./solveConditionalOperation";
@@ -8,13 +9,14 @@ import solveThrowsOperation, {
 } from "./solveThrowsOperation";
 
 export default function solveOperation(
-  op: ReadonlyDeep<Operation>,
+  operation: ReadonlyDeep<Operation>,
+  options: OptionRecord,
 ): SolvedOperation {
-  switch (op.type) {
+  switch (operation.type) {
     case "THROWS":
-      return solveThrowsOperation(op);
+      return solveThrowsOperation(operation);
     case "CONDITIONAL":
-      return solveConditionalOperation(op);
+      return solveConditionalOperation(operation, options);
     case "TEST":
       throw new Error("Test operations are not yet supported.");
   }

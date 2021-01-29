@@ -43,6 +43,6 @@ type Option = RepeatOption | CritsOption;
 type RepeatOption = { type: "REPEAT"; value: number } & TrackedFragment;
 type CritsOption = { type: "CRITS"; enabled: boolean } & TrackedFragment;
 
-type TrackedFragment = { location: Location; text: string };
+type TrackedFragment = { location?: Location; text?: string };
 type Location = { start: TextRange; end: TextRange };
 type TextRange = { offset: number; line: number; column: number };

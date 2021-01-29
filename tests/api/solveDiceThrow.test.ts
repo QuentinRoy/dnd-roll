@@ -30,10 +30,13 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 10,
       count: 3,
+      originalCount: 3,
       modifier: null,
       values: [9, 2, 4],
       trials: [[9, 2, 4]],
       result: 9 + 2 + 4,
+      isMax: false,
+      isMin: false,
     });
     expect(mockedRoll.mock.calls).toEqual([[10], [10], [10]]);
   });
@@ -51,10 +54,13 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 20,
       count: 1,
+      originalCount: 1,
       modifier: "ADVANTAGE",
       values: [14],
       trials: [[9], [14]],
       result: 14,
+      isMax: false,
+      isMin: false,
     });
     expect(mockedRoll.mock.calls).toEqual([[20], [20]]);
   });
@@ -72,10 +78,13 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 20,
       count: 1,
+      originalCount: 1,
       modifier: "ADVANTAGE",
       values: [14],
       trials: [[14], [9]],
       result: 14,
+      isMax: false,
+      isMin: false,
     });
     expect(mockedRoll.mock.calls).toEqual([[20], [20]]);
   });
@@ -93,10 +102,13 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 20,
       count: 1,
+      originalCount: 1,
       modifier: "DISADVANTAGE",
       values: [9],
       trials: [[9], [14]],
       result: 9,
+      isMax: false,
+      isMin: false,
     });
     expect(mockedRoll.mock.calls).toEqual([[20], [20]]);
   });
@@ -114,10 +126,13 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 15,
       count: 1,
+      originalCount: 1,
       modifier: "DISADVANTAGE",
       values: [9],
       trials: [[14], [9]],
       result: 9,
+      isMax: false,
+      isMin: false,
     });
     expect(mockedRoll.mock.calls).toEqual([[15], [15]]);
   });
@@ -139,6 +154,7 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 20,
       count: 2,
+      originalCount: 2,
       modifier: "ADVANTAGE",
       values: [6, 19],
       trials: [
@@ -146,6 +162,8 @@ describe("solveDiceThrow", () => {
         [6, 19],
       ],
       result: 6 + 19,
+      isMax: false,
+      isMin: false,
     });
     expect(mockedRoll.mock.calls).toEqual([[20], [20], [20], [20]]);
   });
@@ -167,6 +185,7 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 20,
       count: 2,
+      originalCount: 2,
       modifier: "DISADVANTAGE",
       values: [14, 9],
       trials: [
@@ -174,6 +193,8 @@ describe("solveDiceThrow", () => {
         [6, 19],
       ],
       result: 14 + 9,
+      isMax: false,
+      isMin: false,
     });
   });
 
@@ -194,6 +215,7 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: -20,
       count: 2,
+      originalCount: 2,
       modifier: "DISADVANTAGE",
       values: [-6, -19],
       trials: [
@@ -201,6 +223,8 @@ describe("solveDiceThrow", () => {
         [-6, -19],
       ],
       result: -6 - 19,
+      isMax: false,
+      isMin: false,
     });
     expect(mockedRoll.mock.calls).toEqual([[20], [20], [20], [20]]);
   });
@@ -217,11 +241,123 @@ describe("solveDiceThrow", () => {
       type: "DICE",
       faces: 10,
       count: 0,
+      originalCount: 0,
       values: [],
       trials: [[]],
       result: 0,
       modifier: null,
+      isMax: true,
+      isMin: true,
     });
     expect(mockedRoll.mock.calls).toEqual([]);
+  });
+
+  test("isMax with multiple dice", () => {
+    mockedRoll
+      .mockReturnValueOnce(12)
+      .mockReturnValueOnce(12)
+      .mockReturnValueOnce(12);
+    expect(
+      solveDiceThrow({
+        type: "DICE",
+        faces: 12,
+        count: 3,
+        modifier: null,
+      }),
+    ).toMatchObject({
+      isMax: true,
+      isMin: false,
+    });
+    expect(mockedRoll.mock.calls).toEqual([[12], [12], [12]]);
+  });
+
+  test("isMax with one die", () => {
+    mockedRoll.mockReturnValueOnce(12);
+    expect(
+      solveDiceThrow({
+        type: "DICE",
+        faces: 12,
+        count: 1,
+        modifier: null,
+      }),
+    ).toMatchObject({
+      isMax: true,
+      isMin: false,
+    });
+    expect(mockedRoll.mock.calls).toEqual([[12]]);
+  });
+
+  test("isMin with multiple dice", () => {
+    mockedRoll
+      .mockReturnValueOnce(1)
+      .mockReturnValueOnce(1)
+      .mockReturnValueOnce(1);
+    expect(
+      solveDiceThrow({
+        type: "DICE",
+        faces: 12,
+        count: 3,
+        modifier: null,
+      }),
+    ).toMatchObject({
+      isMax: false,
+      isMin: true,
+    });
+    expect(mockedRoll.mock.calls).toEqual([[12], [12], [12]]);
+  });
+
+  test("isMin with one die", () => {
+    mockedRoll.mockReturnValueOnce(1);
+    expect(
+      solveDiceThrow({
+        type: "DICE",
+        faces: 12,
+        count: 1,
+        modifier: null,
+      }),
+    ).toEqual({
+      type: "DICE",
+      faces: 12,
+      count: 1,
+      originalCount: 1,
+      values: [1],
+      trials: [[1]],
+      result: 1,
+      modifier: null,
+      isMax: false,
+      isMin: true,
+    });
+    expect(mockedRoll.mock.calls).toEqual([[12]]);
+  });
+
+  test("diceFactor", () => {
+    mockedRoll
+      .mockReturnValueOnce(7)
+      .mockReturnValueOnce(3)
+      .mockReturnValueOnce(5)
+      .mockReturnValueOnce(9);
+    expect(
+      solveDiceThrow(
+        {
+          type: "DICE",
+          faces: 12,
+          count: 2,
+          modifier: null,
+        },
+        { diceFactor: 2 },
+      ),
+    ).toEqual({
+      type: "DICE",
+      faces: 12,
+      count: 4,
+      originalCount: 2,
+      values: [7, 3, 5, 9],
+      trials: [[7, 3, 5, 9]],
+      result: 7 + 3 + 5 + 9,
+      modifier: null,
+      isMax: false,
+      isMin: false,
+    });
+    expect(mockedRoll.mock.calls).toEqual([[12], [12], [12], [12]]);
   });
 });

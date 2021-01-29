@@ -5,21 +5,32 @@ import solveThrowsOperation, {
   SolvedThrowsOperation,
 } from "./solveThrowsOperation";
 import { compare } from "./utils";
+import { OptionRecord } from "./options";
 
 export default function solveConditionalOperation(
-  op: ReadonlyDeep<ConditionalOperation>,
+  operation: ReadonlyDeep<ConditionalOperation>,
+  { areCritsEnabled }: OptionRecord,
 ): SolvedConditionalOperation {
-  let clonedOp = cloneDeep(op);
-  let test = solveThrowsOperation(op.test);
-  let target = solveThrowsOperation(op.target);
-  let isSuccessful = compare(test.result, target.result, op.comparator.type);
+  let clonedOp = cloneDeep(operation);
+  let test = solveThrowsOperation(operation.test);
+  let target = solveThrowsOperation(operation.target);
+  let isCriticalSuccess = areCritsEnabled && test.isMax && !test.isMin;
+  let isCriticalFailure = areCritsEnabled && test.isMin && !test.isMax;
+  let isSuccessful =
+    isCriticalSuccess ||
+    (!isCriticalFailure &&
+      compare(test.result, target.result, operation.comparator.type));
   let success = isSuccessful
-    ? solveThrowsOperation(op.success)
+    ? solveThrowsOperation(operation.success, {
+        diceFactor: isCriticalSuccess ? 2 : 1,
+      })
     : clonedOp.success;
   let result = isSuccessful ? success.result : null;
   return {
     ...clonedOp,
     isSuccessful,
+    isCriticalSuccess,
+    isCriticalFailure,
     result,
     test,
     success,

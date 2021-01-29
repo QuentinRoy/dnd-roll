@@ -2,22 +2,18 @@ import { ReadonlyDeep } from "type-fest";
 import { uniqueId } from "lodash";
 import { Command } from "../grammar/grammar";
 import solveOperation, { SolvedOperation } from "./solveOperation";
-import { OptionRecord, validateOptions } from "./options";
+import { createOptionRecord, OptionRecord, validateOptions } from "./options";
 
 export default function solveCommand(
   command: ReadonlyDeep<Command>,
 ): SolvedCommand {
-  let options: OptionRecord;
-  if (command.optionSet != null) {
-    validateOptions(command.optionSet.values);
-    options = new OptionRecord(command.optionSet.values);
-  } else {
-    options = new OptionRecord([]);
-  }
-  if (options.areCritsEnabled) throw new Error(`crits not supported yet`);
+  let options = createOptionRecord(
+    command.optionSet?.values ?? [],
+    command.operation,
+  );
   let operations = [];
-  for (let i = 0; i < options.repeat; i++) {
-    operations.push(solveOperation(command.operation));
+  for (let i = 0; i < (options.repeat ?? 1); i++) {
+    operations.push(solveOperation(command.operation, options));
   }
   return {
     options,

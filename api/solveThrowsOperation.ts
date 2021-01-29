@@ -4,33 +4,43 @@ import { Throw, ThrowsOperation } from "../grammar/grammar";
 import solveNumberThrow, { SolvedNumberThrow } from "./solveNumberThrow";
 import solveDiceThrow, { SolvedDiceThrow } from "./solveDiceThrow";
 
+type ThrowOptions = { diceFactor?: number };
+
 export default function solveThrowsOperation(
-  op: ReadonlyDeep<ThrowsOperation>,
+  operation: ReadonlyDeep<ThrowsOperation>,
+  options?: ThrowOptions,
 ): SolvedThrowsOperation {
-  let solvedThrows = solveThrows(op.throws);
+  let solvedThrows = solveThrows(operation.throws, options);
   return {
-    ...cloneDeep(op),
+    ...(cloneDeep(operation) as ThrowsOperation),
     throws: solvedThrows,
     result: sumBy(solvedThrows, (t) => t.result),
+    isMax: solvedThrows.every((t) => t.type === "NUMBER" || t.isMax),
+    isMin: solvedThrows.every((t) => t.type === "NUMBER" || t.isMin),
   };
 }
 
 export type SolvedThrowsOperation = ThrowsOperation & {
   result: number;
   throws: SolvedThrow[];
+  isMax: boolean;
+  isMin: boolean;
 };
 
 export type SolvedThrow = SolvedDiceThrow | SolvedNumberThrow;
 
-function solveThrows(throws: ReadonlyDeep<Throw[]>) {
-  return throws.map(solveThrow);
+function solveThrows(throws: ReadonlyDeep<Throw[]>, options?: ThrowOptions) {
+  return throws.map((t) => solveThrow(t, options));
 }
 
-function solveThrow(t: ReadonlyDeep<Throw>): SolvedThrow {
+function solveThrow(
+  t: ReadonlyDeep<Throw>,
+  options?: ThrowOptions,
+): SolvedThrow {
   switch (t.type) {
     case "NUMBER":
       return solveNumberThrow(t);
     case "DICE":
-      return solveDiceThrow(t);
+      return solveDiceThrow(t, options);
   }
 }
