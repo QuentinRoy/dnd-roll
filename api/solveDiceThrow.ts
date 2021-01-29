@@ -11,25 +11,27 @@ export default function solveDiceThrow(
   t: ReadonlyDeep<DiceThrow>,
   { diceFactor = 1 }: DiceThrowOptions = {},
 ): SolvedDiceThrow {
-  let count = t.count * diceFactor;
-  let { faces } = t;
+  let { faces, count: originalCount, modifier } = t;
+  let count = originalCount * diceFactor;
   let trials = [throwDice(count, faces)];
-  if (t.modifier != null) {
+  if (modifier != null) {
     trials.push(throwDice(count, faces));
   }
+  // If there is no modifier, it does not matter if we are going through
+  // minBy or maxBy since there is only one trial.
   let values =
-    t.modifier === "ADVANTAGE" ? maxBy(trials, sum) : minBy(trials, sum);
+    modifier === "ADVANTAGE" ? maxBy(trials, sum) : minBy(trials, sum);
   let result = sum(values);
   return {
     ...t,
     count,
-    originalCount: t.count,
+    originalCount,
     faces,
     values,
     result,
     trials,
-    isMax: Math.abs(result) === Math.abs(count * t.faces),
-    isMin: Math.abs(result) === Math.abs(count),
+    isMax: result === Math.max(count * faces, count * Math.sign(faces)),
+    isMin: result === Math.min(count * faces, count * Math.sign(faces)),
   };
 }
 

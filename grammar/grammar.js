@@ -209,8 +209,8 @@ function peg$parse(input, options) {
       peg$c35 = function(sign, count, faces, modifier) {
             return {
               type: "DICE",
-              faces: sign * faces,
-              count: count,
+              faces: faces,
+              count: sign * count,
               modifier,
               text: text(),
               location: location()

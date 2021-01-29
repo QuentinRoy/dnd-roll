@@ -76,8 +76,8 @@ Throw
   = sign:Sign _ count:Integer faces:Dice modifier:Modifier? {
       return {
         type: "DICE",
-        faces: sign * faces,
-        count: count,
+        faces: faces,
+        count: sign * count,
         modifier,
         text: text(),
         location: location()

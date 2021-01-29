@@ -207,15 +207,15 @@ describe("solveDiceThrow", () => {
     expect(
       solveDiceThrow({
         type: "DICE",
-        faces: -20,
-        count: 2,
+        faces: 20,
+        count: -2,
         modifier: "DISADVANTAGE",
       }),
     ).toEqual({
       type: "DICE",
-      faces: -20,
-      count: 2,
-      originalCount: 2,
+      faces: 20,
+      count: -2,
+      originalCount: -2,
       modifier: "DISADVANTAGE",
       values: [-6, -19],
       trials: [
@@ -237,15 +237,12 @@ describe("solveDiceThrow", () => {
         count: 0,
         modifier: null,
       }),
-    ).toEqual({
-      type: "DICE",
-      faces: 10,
+    ).toMatchObject({
       count: 0,
       originalCount: 0,
       values: [],
       trials: [[]],
       result: 0,
-      modifier: null,
       isMax: true,
       isMin: true,
     });
@@ -258,33 +255,15 @@ describe("solveDiceThrow", () => {
       .mockReturnValueOnce(12)
       .mockReturnValueOnce(12);
     expect(
-      solveDiceThrow({
-        type: "DICE",
-        faces: 12,
-        count: 3,
-        modifier: null,
-      }),
-    ).toMatchObject({
-      isMax: true,
-      isMin: false,
-    });
-    expect(mockedRoll.mock.calls).toEqual([[12], [12], [12]]);
+      solveDiceThrow({ type: "DICE", faces: 12, count: 3, modifier: null }),
+    ).toMatchObject({ isMax: true, isMin: false });
   });
 
   test("isMax with one die", () => {
     mockedRoll.mockReturnValueOnce(12);
     expect(
-      solveDiceThrow({
-        type: "DICE",
-        faces: 12,
-        count: 1,
-        modifier: null,
-      }),
-    ).toMatchObject({
-      isMax: true,
-      isMin: false,
-    });
-    expect(mockedRoll.mock.calls).toEqual([[12]]);
+      solveDiceThrow({ type: "DICE", faces: 12, count: 1, modifier: null }),
+    ).toMatchObject({ isMax: true, isMin: false });
   });
 
   test("isMin with multiple dice", () => {
@@ -293,41 +272,29 @@ describe("solveDiceThrow", () => {
       .mockReturnValueOnce(1)
       .mockReturnValueOnce(1);
     expect(
-      solveDiceThrow({
-        type: "DICE",
-        faces: 12,
-        count: 3,
-        modifier: null,
-      }),
-    ).toMatchObject({
-      isMax: false,
-      isMin: true,
-    });
-    expect(mockedRoll.mock.calls).toEqual([[12], [12], [12]]);
+      solveDiceThrow({ type: "DICE", faces: 12, count: 3, modifier: null }),
+    ).toMatchObject({ result: 3, isMax: false, isMin: true });
   });
 
   test("isMin with one die", () => {
     mockedRoll.mockReturnValueOnce(1);
     expect(
-      solveDiceThrow({
-        type: "DICE",
-        faces: 12,
-        count: 1,
-        modifier: null,
-      }),
-    ).toEqual({
-      type: "DICE",
-      faces: 12,
-      count: 1,
-      originalCount: 1,
-      values: [1],
-      trials: [[1]],
-      result: 1,
-      modifier: null,
-      isMax: false,
-      isMin: true,
-    });
-    expect(mockedRoll.mock.calls).toEqual([[12]]);
+      solveDiceThrow({ type: "DICE", faces: 12, count: 1, modifier: null }),
+    ).toMatchObject({ result: 1, isMax: false, isMin: true });
+  });
+
+  test("isMin with negative value", () => {
+    mockedRoll.mockReturnValueOnce(12);
+    expect(
+      solveDiceThrow({ type: "DICE", faces: 12, count: -1, modifier: null }),
+    ).toMatchObject({ result: -12, isMax: false, isMin: true });
+  });
+
+  test("isMax with negative value", () => {
+    mockedRoll.mockReturnValueOnce(1);
+    expect(
+      solveDiceThrow({ type: "DICE", faces: 12, count: -1, modifier: null }),
+    ).toMatchObject({ result: -1, isMax: true, isMin: false });
   });
 
   test("diceFactor", () => {
@@ -338,26 +305,9 @@ describe("solveDiceThrow", () => {
       .mockReturnValueOnce(9);
     expect(
       solveDiceThrow(
-        {
-          type: "DICE",
-          faces: 12,
-          count: 2,
-          modifier: null,
-        },
+        { type: "DICE", faces: 12, count: 2, modifier: null },
         { diceFactor: 2 },
       ),
-    ).toEqual({
-      type: "DICE",
-      faces: 12,
-      count: 4,
-      originalCount: 2,
-      values: [7, 3, 5, 9],
-      trials: [[7, 3, 5, 9]],
-      result: 7 + 3 + 5 + 9,
-      modifier: null,
-      isMax: false,
-      isMin: false,
-    });
-    expect(mockedRoll.mock.calls).toEqual([[12], [12], [12], [12]]);
+    ).toMatchObject({ count: 4, originalCount: 2, result: 7 + 3 + 5 + 9 });
   });
 });
