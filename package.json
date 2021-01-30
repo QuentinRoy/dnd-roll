@@ -6,7 +6,7 @@
     "dev": "next dev",
     "start": "next start",
     "build": "npm run build-grammar && npm run build-page",
-    "build-grammar": "node script/build-grammar.mjs",
+    "build-grammar": "node script/build-grammar.js",
     "build-page": "next build",
     "test": "jest"
   },
