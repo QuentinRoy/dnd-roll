@@ -4,7 +4,6 @@ import CommandHistory from "../components/CommandHistory";
 import ErrorMessage from "../components/ErrorMessage";
 import InputHeader from "../components/InputHeader";
 import Layout from "../components/Layout";
-import { parse } from "../grammar/grammar";
 
 function reducer(state: State, action: Action) {
   let { input } = state;
