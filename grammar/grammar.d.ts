@@ -6,7 +6,11 @@ export interface SyntaxError extends Error, TrackedFragment {
   found: string | null;
 }
 
-type Command = { optionSet?: OptionSet; label?: Label; operation: Operation };
+type Command<OpType extends Operation = Operation> = {
+  optionSet?: OptionSet;
+  label?: Label;
+  operation: OpType;
+};
 
 type Operation = ThrowsOperation | ConditionalOperation | TestOperation;
 type ThrowsOperation = { type: "THROWS"; throws: Throw[] } & TrackedFragment;
@@ -24,7 +28,7 @@ type TestOperation = {
   target: ThrowsOperation;
 } & TrackedFragment;
 
-type Label = { text: string } & TrackedFragment;
+type Label = { value: string } & TrackedFragment;
 
 type Throw = DiceThrow | NumberThrow;
 type DiceThrow = {

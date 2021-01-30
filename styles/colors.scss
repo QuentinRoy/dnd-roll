@@ -1,4 +1,16 @@
-$startColor: rgb(145, 92, 255);
-$bottomColor: rgb(85, 218, 245);
+$startColor: #4800d8;
+$endColor: #ad00b3;
 $white: #fff;
 $black: #000;
+
+$darkerStartColor: scale-color($startColor, $blackness: +40%);
+$darkerEndColor: scale-color($endColor, $blackness: +40%);
+$lighterStartColor: scale-color($startColor, $whiteness: +70%);
+$lighterEndColor: scale-color($startColor, $whiteness: +70%);
+
+@mixin fixedBackground {
+  background: $startColor;
+  background: linear-gradient(180deg, $startColor 0%, $endColor 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

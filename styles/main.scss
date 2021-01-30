@@ -1,8 +1,7 @@
-@import "./colors.scss";
+@use "./colors.scss";
 
 body {
-  background: $startColor;
-  background: linear-gradient(180deg, $startColor 0%, $bottomColor 100%);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  @include colors.fixedBackground;
+
+  font-size: 25px;
 }

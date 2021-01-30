@@ -146,8 +146,8 @@ function peg$parse(input, options) {
       peg$c2 = function(cmd) { return { label: null, ...cmd }; },
       peg$c3 = ":",
       peg$c4 = peg$literalExpectation(":", false),
-      peg$c5 = function(text) {
-            return { value: text.trim(), text: text(), location: location() };
+      peg$c5 = function(txt) {
+            return { value: txt.trim(), text: text(), location: location() };
           },
       peg$c6 = function(operation, optionSet) {
             return { operation, optionSet };

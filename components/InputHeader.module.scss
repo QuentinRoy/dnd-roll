@@ -1,0 +1,79 @@
+@use "../styles/colors.scss";
+@use "../styles/sizing.scss";
+
+$inputHeight: 2.5em;
+$inputPadding: $inputHeight * 0.08;
+$inputTopMargin: 2em;
+
+.header {
+  @include colors.fixedBackground;
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.form {
+  margin: 2em auto #{$inputHeight / -2} auto;
+  max-width: sizing.$maxWidth;
+  width: 100%;
+  height: $inputHeight;
+  border-radius: $inputHeight;
+  background-color: colors.$white;
+  box-sizing: border-box;
+  box-shadow: 0 0.125em 0.3125em rgba(colors.$black, 0.3);
+  padding: $inputPadding;
+
+  // position form inputs
+  display: flex;
+  justify-content: center;
+}
+
+.input,
+.button {
+  font: inherit;
+  border: 0;
+  outline: 0;
+  border-radius: $inputHeight;
+  box-sizing: border-box;
+  padding: 0 0.714em;
+}
+
+.input {
+  color: colors.$startColor;
+  transition: color 500ms, filter 500ms;
+  background: transparent;
+  height: 100%;
+  width: 100%;
+  filter: drop-shadow(0 0 3px scale-color(colors.$startColor, $alpha: -100%));
+
+  &::placeholder {
+    color: scale-color($color: colors.$startColor, $whiteness: 70%);
+  }
+}
+
+.flash {
+  .input {
+    transition: color 0ms;
+    color: colors.$endColor;
+    filter: drop-shadow(0 0 3px scale-color(colors.$endColor, $alpha: -50%));
+  }
+}
+
+.button {
+  color: colors.$white;
+  padding: 0;
+  height: 100%;
+  width: 4.8em;
+  cursor: pointer;
+  background: colors.$startColor;
+
+  &:active {
+    background: colors.$endColor;
+  }
+  &:disabled {
+    cursor: inherit;
+    background: scale-color(colors.$startColor, $whiteness: +40%);
+  }
+}

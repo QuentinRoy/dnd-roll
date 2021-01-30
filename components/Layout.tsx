@@ -9,12 +9,12 @@ export type LayoutProps = {
 
 export default function Layout({ children, title }) {
   return (
-    <div className={styles.layout}>
+    <main className={styles.layout}>
       <Head>
         <title>{title}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {children}
-    </div>
+    </main>
   );
 }

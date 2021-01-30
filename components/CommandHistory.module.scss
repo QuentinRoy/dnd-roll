@@ -1,0 +1,12 @@
+@use "../styles/colors.scss";
+@use "../styles/sizing.scss";
+
+$widthOffset: 1em;
+
+.main {
+  box-sizing: border-box;
+  width: calc(100% - #{$widthOffset});
+  max-width: calc(#{sizing.$maxWidth} - #{$widthOffset});
+  margin: 0 auto 0 auto;
+  padding: 3em 1em 1em 1em;
+}

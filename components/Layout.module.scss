@@ -1,4 +1,8 @@
+@use "./InputHeader.module.scss";
+
+$headerHeight: InputHeader.$inputHeight / 2 + InputHeader.$inputTopMargin;
+
 .layout {
-  width: 1000px;
-  margin: 2em auto;
+  margin-top: $headerHeight;
+  width: 100%;
 }

@@ -11,7 +11,7 @@ export default function solveConditionalOperation(
   operation: ReadonlyDeep<ConditionalOperation>,
   { areCritsEnabled }: OptionRecord,
 ): SolvedConditionalOperation {
-  let clonedOp = cloneDeep(operation);
+  let clonedOp = cloneDeep(operation) as ConditionalOperation;
   let test = solveThrowsOperation(operation.test);
   let target = solveThrowsOperation(operation.target);
   let isCriticalSuccess = areCritsEnabled && test.isMax && !test.isMin;
@@ -20,12 +20,15 @@ export default function solveConditionalOperation(
     isCriticalSuccess ||
     (!isCriticalFailure &&
       compare(test.result, target.result, operation.comparator.type));
-  let success = isSuccessful
-    ? solveThrowsOperation(operation.success, {
-        diceFactor: isCriticalSuccess ? 2 : 1,
-      })
-    : clonedOp.success;
-  let result = isSuccessful ? success.result : null;
+  let success = clonedOp.success;
+  let result = null;
+  if (isSuccessful) {
+    let solvedSuccess = solveThrowsOperation(operation.success, {
+      diceFactor: isCriticalSuccess ? 2 : 1,
+    });
+    success = solvedSuccess;
+    result = solvedSuccess.result;
+  }
   return {
     ...clonedOp,
     isSuccessful,
@@ -39,6 +42,8 @@ export default function solveConditionalOperation(
 }
 
 export type SolvedConditionalOperation = ConditionalOperation & {
+  isCriticalSuccess: boolean;
+  isCriticalFailure: boolean;
   isSuccessful: boolean;
   result: number | null;
   test: SolvedThrowsOperation;

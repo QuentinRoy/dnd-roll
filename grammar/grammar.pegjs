@@ -6,8 +6,8 @@ LabeledCommand
   / cmd:Command { return { label: null, ...cmd }; }
 
 Label
-  = text:Text _ ":" {
-      return { value: text.trim(), text: text(), location: location() };
+  = txt:Text _ ":" {
+      return { value: txt.trim(), text: text(), location: location() };
     }
 
 Command

@@ -1,0 +1,78 @@
+@use "../styles/colors.scss";
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "header header"
+    "total details";
+
+  position: relative;
+  margin-bottom: 1em;
+  cursor: pointer;
+}
+
+.header {
+  color: white;
+  transition: opacity 200ms;
+  grid-area: header;
+  opacity: 0;
+  font-size: 0.7em;
+  margin-bottom: 0.2em;
+
+  .item:hover & {
+    opacity: 0.6;
+  }
+}
+
+.details {
+  color: white;
+  opacity: 0.8;
+  grid-area: details;
+  align-self: center;
+  margin-left: 1em;
+}
+
+.total {
+  grid-area: total;
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  border-radius: 1em;
+  color: colors.$darkerStartColor;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.successes {
+  &::after {
+    content: "✓";
+  }
+}
+
+.crits.successes {
+  &::after {
+    content: "★";
+  }
+}
+
+.failures {
+  &::after {
+    content: "✗";
+  }
+}
+
+.crits.failures {
+  &::after {
+    content: "☠";
+  }
+}
+
+.label {
+  &::after {
+    content: ")";
+  }
+  &::before {
+    content: "(";
+  }
+  margin-left: 1em;
+}

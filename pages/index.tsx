@@ -2,18 +2,22 @@ import * as React from "react";
 import solveCommand, { SolvedCommand } from "../api/solveCommand";
 import CommandHistory from "../components/CommandHistory";
 import ErrorMessage from "../components/ErrorMessage";
-import Input from "../components/Input";
+import InputHeader from "../components/InputHeader";
 import Layout from "../components/Layout";
 import { parse } from "../grammar/grammar";
 
 function reducer(state: State, action: Action) {
+  let { input } = state;
   switch (action.type) {
-    case "SUBMIT":
+    case "SUBMIT_COMMAND":
+      // Set input for case below.
+      input = action.value;
+    case "SUBMIT_INPUT":
       try {
-        let command = parse(state.input);
-        let solvedCommand = solveCommand(command);
+        let solvedCommand = solveCommand(input);
         return {
           ...state,
+          input,
           history: [solvedCommand, ...state.history],
           error: null,
         };
@@ -21,7 +25,8 @@ function reducer(state: State, action: Action) {
         return { ...state, error: e };
       }
     case "INPUT":
-      return { ...state, input: action.input };
+    case "INPUT_COMMAND":
+      return { ...state, input: action.value };
   }
 }
 
@@ -31,7 +36,11 @@ type State = {
   error: Error | null;
 };
 
-type Action = { type: "SUBMIT" } | { type: "INPUT"; input: string };
+type Action =
+  | { type: "SUBMIT_INPUT" }
+  | { type: "INPUT"; value: string }
+  | { type: "INPUT_COMMAND"; value: string }
+  | { type: "SUBMIT_COMMAND"; value: string };
 
 export default function Home() {
   const [{ input, history, error }, dispatch] = React.useReducer(reducer, {
@@ -48,21 +57,27 @@ export default function Home() {
 
   return (
     <Layout title="D&amp;D Roll">
-      <main>
-        <Input
-          submitLabel="Roll"
-          onChange={(value) => {
-            dispatch({ type: "INPUT", input: value });
-          }}
-          onSubmit={() => {
-            dispatch({ type: "SUBMIT" });
-          }}
-          value={input}
-          placeholder="1d20 + 1 > 12 ? 2d6 + 1"
-        />
-        <ErrorMessage error={error} />
-        <CommandHistory commands={history} />
-      </main>
+      <InputHeader
+        submitLabel="Roll"
+        onChange={(value) => {
+          dispatch({ type: "INPUT", value });
+        }}
+        onSubmit={() => {
+          dispatch({ type: "SUBMIT_INPUT" });
+        }}
+        value={input}
+        placeholder="1d20 + 1 >= 12 ? 2d6 + 1"
+      />
+      <ErrorMessage error={error} />
+      <CommandHistory
+        commands={history}
+        onClick={(cmd) => {
+          dispatch({ type: "INPUT_COMMAND", value: cmd.text });
+        }}
+        onDoubleClick={(cmd) => {
+          dispatch({ type: "SUBMIT_COMMAND", value: cmd.text });
+        }}
+      />
     </Layout>
   );
 }

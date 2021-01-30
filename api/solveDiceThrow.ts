@@ -14,6 +14,8 @@ export default function solveDiceThrow(
   let { faces, count: originalCount, modifier } = t;
   let count = originalCount * diceFactor;
   let trials = [throwDice(count, faces)];
+  // If there is advantage or disadvantage, the dice need to be rolled twice
+  // to get the best or the worst values.
   if (modifier != null) {
     trials.push(throwDice(count, faces));
   }
